@@ -6,12 +6,12 @@ from .models import Actividades, Temas, Plan_leccion, Materia, Plan_estudio, Cal
 from .serializer import UsuariosRegistradosSerializer, RolesSerializer, NivelEducativoSerializer, AulasSerializer, MateriaSerializer, PlanEstudioSerializer, ActividadesSerializer, TemasSerializer, PlanLeccionSerializer, CalificacionSerializer
 # Create your views here.
 
-class UsuariosRegistradosViewSet(viewsets.ModelViewSet): #CRUD de la clase Usuarios_registrados    
+class UsuariosRegistradosViewSet(viewsets.ModelViewSet):    
     queryset = Usuarios_registrados.objects.all()
     serializer_class = UsuariosRegistradosSerializer
 
 class RolesViewSet(viewsets.ModelViewSet):
-    queryset = Roles.objects.all()
+    queryset = Roles.objects.all()  
     serializer_class = RolesSerializer
     
 class NivelEducativoViewSet(viewsets.ModelViewSet):
@@ -19,19 +19,8 @@ class NivelEducativoViewSet(viewsets.ModelViewSet):
     serializer_class = NivelEducativoSerializer
     
 class AulasViewSet(viewsets.ModelViewSet):
-    queryset = Aulas.objects.prefetch_related('estudiantes')
+    queryset = Aulas.objects.prefetch_related('docentes', 'estudiantes')
     serializer_class = AulasSerializer
-
-    def perform_update(self, serializer):
-        aula = serializer.instance
-        estudiantes_nuevos = serializer.validated_data.get("estudiantes", [])
-
-        for estudiante in estudiantes_nuevos:
-            if Aulas.objects.filter(estudiantes=estudiante).exclude(id=aula.id).exists():
-                raise serializers.ValidationError(f"El estudiante {estudiante.nombre_usuario} ya está asignado a otra aula.")
-
-        aula.estudiantes.set(estudiantes_nuevos)  # 🔹 Reemplaza la lista con los estudiantes nuevos permitir duplicaciones
-        serializer.save()
         
 class MateriaViewSet(viewsets.ModelViewSet):
     queryset = Materia.objects.prefetch_related('aulas', 'actividades', 'temas')
