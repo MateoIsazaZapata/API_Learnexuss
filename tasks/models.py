@@ -59,12 +59,15 @@ class Aulas(models.Model):
     id_aula = models.AutoField(primary_key=True)
     nombre_aula = models.CharField(max_length=100, null=False, blank=False)
 #Llaves foraneas
-    nivel_eductativo = models.ForeignKey(Nivel_educativo, on_delete=models.CASCADE, null=False, blank=False)
+    nivel_educativo = models.ForeignKey(Nivel_educativo, on_delete=models.CASCADE, null=False, blank=False)
     docentes = models.ManyToManyField(Usuarios_registrados, related_name='docente', limit_choices_to={'roles__rol': 'DOCENTE'}, blank=True)
     estudiantes = models.ManyToManyField(Usuarios_registrados, related_name='estudiante', limit_choices_to={'roles__rol': 'ESTUDIANTE'}, blank=True)
 #funcion para mostrar tareas en el admin
     def __str__(self):
-        return f"ID: {self.id_aula} - Nombre aula: {self.nombre_aula} - {self.nivel_eductativo}" #OBSERVACION
+        docentes_asignados = ', '.join([docente.nombre_usuario for docente in self.docentes.all()])
+        estudiantes_asignados = ', '.join([estudiante.nombre_usuario for estudiante in self.estudiantes.all()])
+
+        return f"ID: {self.id_aula} - Nombre aula: {self.nombre_aula} - {self.nivel_educativo}|| Docentes: {docentes_asignados} || Estudiantes: {estudiantes_asignados}"  #OBSERVACION
 
 #Informacion de aisstencuia de cada estudiante   
 class Lista_asistencia(models.Model):
