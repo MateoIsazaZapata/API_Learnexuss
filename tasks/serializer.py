@@ -17,10 +17,14 @@ class NivelEducativoSerializer(serializers.ModelSerializer):
         
         
 class UsuariosRegistradosSerializer(serializers.ModelSerializer):
+    tipo_rol = serializers.SerializerMethodField()
     class Meta:
         model = Usuarios_registrados
-        fields = ('id_usuario','tipo_doc', 'numero_doc', 'nombre_usuario', 'roles', 'email', 'estado_usuario') #muestra todos los campos del modelo
+        fields = ('id_usuario','tipo_doc', 'numero_doc', 'nombre_usuario', 'roles', 'tipo_rol', 'email', 'estado_usuario') #muestra todos los campos del modelo
         
+    def get_tipo_rol(self, obj):
+        return obj.roles.rol
+    
     def validate(self, data):
         if data['roles'].rol == "ESTUDIANTE":
             aulas_asignadas = Aulas.objects.filter(estudiantes__id_usuario=self.instance.id_usuario)
@@ -30,18 +34,38 @@ class UsuariosRegistradosSerializer(serializers.ModelSerializer):
     
 
 class AulasSerializer(serializers.ModelSerializer):
+    docentes_asignados = serializers.SerializerMethodField()
+    estudiantes_asignados = serializers.SerializerMethodField()
+
     docentes = serializers.PrimaryKeyRelatedField(many=True, queryset=Usuarios_registrados.objects.filter(roles__rol="DOCENTE"))
     estudiantes = serializers.PrimaryKeyRelatedField(many=True, queryset=Usuarios_registrados.objects.filter(roles__rol="ESTUDIANTE"))
 
     class Meta:
         model = Aulas
-        fields = ('id_aula', 'nombre_aula', 'nivel_eductativo', 'docentes', 'estudiantes')
+        fields = ('id_aula', 'nombre_aula', 'nivel_educativo', 'docentes', 'docentes_asignados', 'estudiantes', 'estudiantes_asignados')
+        
+    def get_docentes_asignados(self, obj):
+        return ', '.join([docente.nombre_usuario for docente in obj.docentes.all()])
+    
+    def get_estudiantes_asignados(self, obj):
+        return ', '.join([estudiante.nombre_usuario for estudiante in obj.estudiantes.all()])
+    
+    def validate_estudiantes(self, estudiantes):
+        # Si es una instancia en edición, la excluimos de la validación
+        aula_actual = self.instance if self.instance else None
+    
+        for estudiante in estudiantes:
+            # Buscar si el estudiante ya pertenece a otra aula
+            aulas = Aulas.objects.filter(estudiantes=estudiante)
+            if aula_actual:
+                aulas = aulas.exclude(id_aula=aula_actual.id_aula)
+    
+            if aulas.exists():
+                raise serializers.ValidationError(
+                    f"El estudiante '{estudiante.nombre_usuario}' ya está asignado a otra   aula."
+                )
+        return estudiantes
 
-    def validate_estudiantes(self, value):
-        for estudiante in value:
-            if Aulas.objects.filter(estudiantes=estudiante).exclude(id=self.instance.id).exists():
-                raise serializers.ValidationError(f"El estudiante {estudiante.nombre_usuario} ya está asignado a otra aula.")
-        return value
     
 class MateriaSerializer(serializers.ModelSerializer):
     aulas = serializers.PrimaryKeyRelatedField(many=True, queryset=Aulas.objects.all())
