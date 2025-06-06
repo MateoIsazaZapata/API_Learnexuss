@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <link href="{% static 'css/output.css' %}" rel="stylesheet">
+    <link href="../src/output.css" rel="stylesheet">
+    <title>Aula</title>
+</head>
+<body class="flex flex-col bg-gray-300 min-h-screen">
+    <div class="flex flex-col md:flex-row bg-gray-500 p-4 justify-between items-center gap-4">        <!-- recuadro navbar -->
+        <div class="flex items-center gap-8">
+            <div>
+                <img src="../pictures/logo_not_found.png" alt="Learnexuss w-10 h-10" class="w-11 h-11">
+            </div>
+            <h3 class="text-3xl font-bold">
+                Nombre del aula
+            </h3>
+        </div>
+        <div class="flex flex-row gap-4">
+            <button class="bg-green-500 px-4 py-2 gap-4 text-white rounded">Asistencia</button>
+            <button class="bg-green-500 px-4 py-2 gap-4 text-white rounded">Actividades</button>
+        </div>
+        <div class="flex items-center gap-4">
+            <div>
+                <h3 class="text-xl font-semibold">Nombre de usuario</h3>
+            </div>
+            <div>
+                <img src="../pictures/logo_not_found.png" alt="foto de perfil w-10 h-10" class="w-11 h-11 border-solid border-blue-500 rounded-full">
+            </div>
+        </div>
+    </div>
+    <div class="flex-grow overflow-x-auto">   <!-- seccion tablas -->
+        <table class="table-auto border-collapse border border-gray-300 w-full">
+            <thead class="bg-green-500 text-white">
+                <tr>
+                    <th class="border border-gray-400 px-4 py-2 text-left font-bold">
+                        Id
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2 text-left font-bold">
+                        Nombre
+                    </th>
+                    <th class="border border-gray-400 px-4 py-2 text-left font-bold">
+                        Correo electronico
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="bg-gray-100">
+                    <td class="border border-gray-400 px-4 py-2">###</td>
+                    <td class="border border-gray-400 px-4 py-2">Nombre alumno</td>
+                    <td class="border border-gray-400 px-4 py-2">alumno@institucion.com</td>
+                </tr>
+                <tr class="bg-gray-100">
+                    <td class="border border-gray-400 px-4 py-2">###</td>
+                    <td class="border border-gray-400 px-4 py-2">Nombre alumno</td>
+                    <td class="border border-gray-400 px-4 py-2">alumno@institucion.com</td>
+                </tr>
+
+            </tbody>
+        </table>
+    </div>
+    <div class="text-center bg-green-500">
+        <div class="gap-2 flex flex-grow flex-wrap">    <!-- seccion contenido -->
+        <!-- recuadro aulas -->
+            <div class="flex flex-col items-center bg-gray-500 py-4 m-4 rounded-xl max-w-sm w-64 text-white">                
+                <div class="bg-blue-900 mb-2 px-8 py-2 rounded-xl">
+                    <h1 class="text-xl font-bold">Nombre del aula</h1>
+                </div>
+                <h4 class="text-lg font-semibold">ID del aula</h4>
+                <button class="bg-green-500 px-4 py-1 rounded my-4">Ingresar</button>
+            </div>
+        <!-- recuadro aulas -->
+        </div>
+    </div>
+
+</body>
+</html>

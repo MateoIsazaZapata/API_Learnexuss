@@ -1,37 +1,35 @@
 # from django.shortcuts import render
 from django.db.models import Count
-from rest_framework import viewsets, serializers
-from .models import Roles, Usuarios_registrados, Nivel_educativo, Aulas, Lista_asistencia
+from rest_framework import viewsets
+from rest_framework import serializers
+from .models import Roles, Coordinador, Docente, Estudiante, Nivel_educativo, Aulas, Lista_asistencia
 from .models import Actividades, Temas, Plan_leccion, Materia, Plan_estudio, Calificacion
-from .serializer import UsuariosRegistradosSerializer, RolesSerializer, NivelEducativoSerializer, AulasSerializer, MateriaSerializer, PlanEstudioSerializer, ActividadesSerializer, TemasSerializer, PlanLeccionSerializer, CalificacionSerializer
+from .serializer import CoordinadorSerializer, DocenteSerializer, EstudianteSerializer, RolesSerializer, NivelEducativoSerializer, AulasSerializer, MateriaSerializer, PlanEstudioSerializer, ActividadesSerializer, TemasSerializer, PlanLeccionSerializer, CalificacionSerializer
 # Create your views here.
 
-class UsuariosRegistradosViewSet(viewsets.ModelViewSet): #CRUD de la clase Usuarios_registrados    
-    queryset = Usuarios_registrados.objects.all()
-    serializer_class = UsuariosRegistradosSerializer
-
 class RolesViewSet(viewsets.ModelViewSet):
-    queryset = Roles.objects.all()
+    queryset = Roles.objects.all()  
     serializer_class = RolesSerializer
     
 class NivelEducativoViewSet(viewsets.ModelViewSet):
     queryset = Nivel_educativo.objects.all()
     serializer_class = NivelEducativoSerializer
     
+class CoordinadorViewSet(viewsets.ModelViewSet):    
+    queryset = Coordinador.objects.all()
+    serializer_class = CoordinadorSerializer
+    
+class DocenteViewSet(viewsets.ModelViewSet):    
+    queryset = Docente.objects.all()
+    serializer_class = DocenteSerializer
+    
+class EstudianteViewSet(viewsets.ModelViewSet):    
+    queryset = Estudiante.objects.all()
+    serializer_class = EstudianteSerializer
+
 class AulasViewSet(viewsets.ModelViewSet):
-    queryset = Aulas.objects.prefetch_related('estudiantes')
+    queryset = Aulas.objects.prefetch_related('docentes', 'estudiantes')
     serializer_class = AulasSerializer
-
-    def perform_update(self, serializer):
-        aula = serializer.instance
-        estudiantes_nuevos = serializer.validated_data.get("estudiantes", [])
-
-        for estudiante in estudiantes_nuevos:
-            if Aulas.objects.filter(estudiantes=estudiante).exclude(id=aula.id).exists():
-                raise serializers.ValidationError(f"El estudiante {estudiante.nombre_usuario} ya está asignado a otra aula.")
-
-        aula.estudiantes.set(estudiantes_nuevos)  # 🔹 Reemplaza la lista con los estudiantes nuevos permitir duplicaciones
-        serializer.save()
         
 class MateriaViewSet(viewsets.ModelViewSet):
     queryset = Materia.objects.prefetch_related('aulas', 'actividades', 'temas')
