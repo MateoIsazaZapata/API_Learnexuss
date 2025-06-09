@@ -1,7 +1,3 @@
-#PUERTO POSTGRES: 5432
-#PUERTO MYSQL: 3306
-#PUERTO SQLITE: 8000
-
 from django.db import models
 
 # Create your models here.
